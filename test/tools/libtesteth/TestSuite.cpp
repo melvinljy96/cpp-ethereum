@@ -82,10 +82,15 @@ void addClientInfo(json_spirit::mValue& _v, fs::path const& _testSource, h256 co
 void checkFillerHash(fs::path const& _compiledTest, fs::path const& _sourceTest)
 {
 	json_spirit::mValue v;
-	string const s = asString(dev::contents(_compiledTest));
+	string s = asString(dev::contents(_compiledTest));
 	BOOST_REQUIRE_MESSAGE(s.length() > 0, "Contents of " + _compiledTest.string() + " is empty.");
 	json_spirit::read_string(s, v);
-	h256 const fillerHash = sha3(dev::contents(_sourceTest));
+
+	json_spirit::mValue v2;
+	s = asString(dev::contents(_sourceTest));
+	BOOST_REQUIRE_MESSAGE(s.length() > 0, "Contents of " + _sourceTest.string() + " is empty.");
+	json_spirit::read_string(s, v2);
+	h256 const fillerHash = sha3(json_spirit::write_string(v2, true));
 
 	for (auto& i: v.get_obj())
 	{
